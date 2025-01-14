@@ -62,5 +62,14 @@ module.exports = {
     res.json(playlists[playlistIndex])
   },
   //DELETE /playlists/:id 
+  delete: (req, res) => {
+    const { id } = req.params
+    const playlistIndex = playlists.findIndex(playlist => playlist.id === +id)
+    if (playlistIndex === -1) {
+      return res.status(404).json({ message: 'Playlist not found' })
+    }
 
+    const deletedPlaylist = playlists.splice(playlistIndex, 1)  
+    res.json({message: 'Deleted playlist' , deletedPlaylist } )
+  }
 }
