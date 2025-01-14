@@ -34,10 +34,33 @@ module.exports = {
 
     playlists.push(newPlaylist)
     res.status(201).json(newPlaylist)
-  }
+  },
 
   //PUT /playlists/:id
+  update: (req, res) => {
+    const { id } = req.params
+    const { name, tags, musics } = req.body
 
+    const playlistIndex = playlists.findIndex(playlist => playlist.id === +id)
+
+    if (playlistIndex === -1) {
+      return res.status(404).json({ message: 'Playlist not found' })
+    }
+
+    if (typeof name === 'string') {
+      playlists[playlistIndex].name = name
+    }
+
+    if (tags && Array.isArray(tags)) {
+      playlists[playlistIndex].tags = tags
+    }
+
+    if (musics && Array.isArray(musics)) {
+      playlists[playlistIndex].musics = musics
+    }
+
+    res.json(playlists[playlistIndex])
+  },
   //DELETE /playlists/:id 
 
 }
