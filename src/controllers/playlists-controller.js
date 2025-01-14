@@ -1,10 +1,11 @@
 let playlists = []
+const randomId = require('../utils')
 
 module.exports = {
   //GET /playlists
   index: (req, res) => { res.json(playlists) },
 
-  //GET /playlists/:id
+  //GET /api/playlists/:id
   show: (req, res) => {
     const { id } = req.params
     const playlist = playlists.find(item => item.id === +id)
@@ -13,7 +14,7 @@ module.exports = {
     })
     res.json(playlist)
   },
-  //POST /playlists
+  //POST /api/playlists
   save: (req, res) => {
     const { name, tags, musics } = req.body
 
@@ -25,8 +26,12 @@ module.exports = {
       return res.status(400).json({ message: 'Tags must be an array' })
     }
 
+    if (musics && !Array.isArray(musics)) {
+      return res.status(400).json({ message: 'Musics must be an array' })
+    }
+
     const newPlaylist = {
-      id: Math.floor(Math.random() * 99999),
+      id: randomId(),
       name,
       tags,
       musics: musics || []
@@ -36,7 +41,7 @@ module.exports = {
     res.status(201).json(newPlaylist)
   },
 
-  //PUT /playlists/:id
+  //PUT /api/playlists/:id
   update: (req, res) => {
     const { id } = req.params
     const { name, tags, musics } = req.body
@@ -61,7 +66,7 @@ module.exports = {
 
     res.json(playlists[playlistIndex])
   },
-  //DELETE /playlists/:id 
+  //DELETE /api/playlists/:id 
   delete: (req, res) => {
     const { id } = req.params
     const playlistIndex = playlists.findIndex(playlist => playlist.id === +id)
@@ -69,7 +74,41 @@ module.exports = {
       return res.status(404).json({ message: 'Playlist not found' })
     }
 
-    const deletedPlaylist = playlists.splice(playlistIndex, 1)  
-    res.json({message: 'Deleted playlist' , deletedPlaylist } )
-  }
+    const deletedPlaylist = playlists.splice(playlistIndex, 1)
+    res.json({ message: 'Deleted playlist', deletedPlaylist })
+  },
+
+  //POST /api/playlists/:id/musics
+  addMusic: (req, res) => {
+    const { id } = req.params
+    const { title, year, artist, album } = req.body
+
+    const playlist = playlists.find(playlist => playlist.id === +id)
+    if (!playlist) {
+      return res.status(404).json({ message: 'Playlist not found' })
+    }
+
+    if (
+      typeof title !== 'string' ||
+      typeof year !== 'number' ||
+      typeof artist !== 'string' ||
+      typeof album !== 'string'
+    ) {
+      res.status(400).json({ message: 'invalid fields' })
+    }
+
+    const newMusic = {
+      id: randomId(),
+      title,
+      year,
+      artist,
+      album
+    }
+
+    playlist.musics.push(newMusic)
+    res.status(201).json({ message: 'Added a new music.', newMusic })
+
+  },
+  //DELETE /api/playlists/:playlistId/musics/:musicId
+
 }

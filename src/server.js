@@ -1,9 +1,9 @@
 const express = require('express');
-const router = require('./routes');
+const playlistsRouter = require('./routes');
 const app = express();
 
 app.use(express.json())
-app.use('/api', router)
+app.use('/api/playlists', playlistsRouter)
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
