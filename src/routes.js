@@ -17,4 +17,6 @@ playlistsRouter.delete('/:id', playlistsController.delete)
 //Musics on playlists
 playlistsRouter.post('/:id/musics', playlistsController.addMusic)
 
+playlistsRouter.delete('/:playlistId/musics/:musicId', playlistsController.removeMusic)
+
 module.exports = playlistsRouter

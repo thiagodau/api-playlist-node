@@ -4,7 +4,6 @@ const randomId = require('../utils')
 module.exports = {
   //GET /playlists
   index: (req, res) => { res.json(playlists) },
-
   //GET /api/playlists/:id
   show: (req, res) => {
     const { id } = req.params
@@ -40,7 +39,6 @@ module.exports = {
     playlists.push(newPlaylist)
     res.status(201).json(newPlaylist)
   },
-
   //PUT /api/playlists/:id
   update: (req, res) => {
     const { id } = req.params
@@ -77,7 +75,6 @@ module.exports = {
     const deletedPlaylist = playlists.splice(playlistIndex, 1)
     res.json({ message: 'Deleted playlist', deletedPlaylist })
   },
-
   //POST /api/playlists/:id/musics
   addMusic: (req, res) => {
     const { id } = req.params
@@ -110,5 +107,20 @@ module.exports = {
 
   },
   //DELETE /api/playlists/:playlistId/musics/:musicId
+  removeMusic: (req, res) => {
+    const { playlistId, musicId } = req.params
 
+    const playlist = playlists.find(playlist => playlist.id === +playlistId)
+    if (!playlist) {
+      return res.status(404).json({ message: 'Playlist not found' })
+    }
+
+    const musicIndex = playlist.musics.findIndex(music => music.id === +musicId)
+    if (musicIndex === -1) {
+      return res.status(404).json({ message: 'Music not found' })
+    }
+
+    const deletedMusic = playlist.musics.splice(musicIndex, 1)
+    res.status(201).json({ message: 'Deleted music', deletedMusic })
+  }
 }
